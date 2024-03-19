@@ -1,4 +1,6 @@
 // Тоглоомын бүх газарт ашиглагдах глобаль хуьсагчдыг энд зарлья
+// Тоглоом дууссан эсэхийг хадгалах төлөвийн хувьсагч
+var isNewGame;
 // Аль тоглогч шоо вэ гэдгийг энд хадгална
 var activePlayer;
 
@@ -14,7 +16,10 @@ var diceDom = document.querySelector(".dice");
 initGame();
 
 // Тоглоомыг шинээр эхлэхэд бэлтгэнэ
-function initGame(){
+function initGame() {
+
+    // Тоглоом эхэлээ гэдэг төлөвт оруулнө.
+    isNewGame = true;
 
     // Тоглогчийн ээлжийг хадгалах хувьсагч, нэгдүгээр тоглогчийн 0 хоёрдугаар тоглогчийг 1 гэж тэмдэглэе.
     activePlayer = 0;
@@ -49,30 +54,34 @@ diceDom.style.display = "none"
 // Шоог шидэх эвент листернер
 document.querySelector(".btn-roll").addEventListener("click", function() {
 
-    // 1-6 доторх санамсаргүй нэг тоо гаргаж авна
-    var diceNumber = Math.floor(Math.random() * 6) + 1;
+    if (isNewGame) {
+        // 1-6 доторх санамсаргүй нэг тоо гаргаж авна
+        var diceNumber = Math.floor(Math.random() * 6) + 1;
 
     // Шоог зургын веб дээр гаргаж ирнэ
-    diceDom.style.display = "block"
+        diceDom.style.display = "block"
 
     // Буусан санамсаргүй тоонд харгалзах шооны зургийг веб дээр гаргаж ирнэ
-    diceDom.src = "dice-" + diceNumber + ".png";
+        diceDom.src = "dice-" + diceNumber + ".png";
 
     // Буусан тоон нь 1-ээс ялгаатай бол идэвхтэй тоглогчийн ээлжийн оноог нэмэгдүүлнэ 
-    if(diceNumber !== 1){
+        if(diceNumber !== 1){
 
         // 1-ээс ялгаатай тоо буулаа. Буусан тоог тоглогчид нэмж өгнө
         roundScore = roundScore + diceNumber;
         document.getElementById("current-" + activePlayer).textContent = roundScore;
-    } else {
+        } else {
         // 1 буусан тул тоглогчийн ээлжийг энэ хэсэгт сольж өгнө.
         switchTonextPlayer();
-    }
+        }
+    } 
 }); 
 // Hold товчний эвент листернер
 document.querySelector(".btn-hold").addEventListener("click", function() {
 
-    // Уг тоглогчийн цуглуулсан оноог глобал оноон дээр нэмж өгнө
+   if(isNewGame) 
+   {
+ // Уг тоглогчийн цуглуулсан оноог глобал оноон дээр нэмж өгнө
     // if (activePlayer === 0) {
     //     scores[0] = scores[0] + roundScore;
     // } else {
@@ -86,6 +95,9 @@ document.querySelector(".btn-hold").addEventListener("click", function() {
     // Уг тоглогч хожсон эсэхийг (оноо нь 100-аас их эсэх) шалгах
 if (scores[activePlayer] >= 20 ) {
 
+    // Тоглоомийг дууссан төлөвт оруулна.
+    isNewGame = false;
+
     // Ялагч гэсэн текстийг нэрний оронд гаргана.
     document.getElementById("name-" + activePlayer).textContent = "Winner !!!";
         document.querySelector(".player-" + activePlayer + "-panel").classList.add("winner")
@@ -94,6 +106,9 @@ if (scores[activePlayer] >= 20 ) {
     // Тоглогчийн ээлжийг солино.
     switchTonextPlayer();   
 }
+   } else {
+
+   }
 });
 // Энэ функц нь тоглох ээлжийг дараачийн тоглогчруу шилжүүлнэ.
 function switchTonextPlayer() {
